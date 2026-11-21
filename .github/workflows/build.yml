@@ -41,36 +41,14 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import plistlib
-
-          required = [
-              Path("ThreeOneOSFive/Info.plist"),
-              Path("ThreeOneOSFive.xcodeproj/project.pbxproj"),
-              Path("ThreeOneOSFive/ContentView.swift"),
-              Path("ThreeOneOSFive/helpers/PatchProjectStore.swift"),
-              Path("ThreeOneOSFive/helpers/PatchProjectLibrary.swift"),
-              Path("ThreeOneOSFive/helpers/PatchWorkspaceService.swift"),
-              Path("ThreeOneOSFive/helpers/PatchTransaction.swift"),
-              Path("ThreeOneOSFive/helpers/PatchKeyStore.swift"),
-              Path("ThreeOneOSFive/helpers/ContainerStore.swift"),
-              Path("ThreeOneOSFive/helpers/VesperDashRemoteSync.swift"),
-          ]
-
+          required = [Path("ThreeOneOSFive/Info.plist"), Path("ThreeOneOSFive.xcodeproj/project.pbxproj"), Path("ThreeOneOSFive/ContentView.swift"), Path("ThreeOneOSFive/helpers/PatchProjectStore.swift"), Path("ThreeOneOSFive/helpers/PatchProjectLibrary.swift"), Path("ThreeOneOSFive/helpers/PatchWorkspaceService.swift"), Path("ThreeOneOSFive/helpers/PatchTransaction.swift"), Path("ThreeOneOSFive/helpers/PatchKeyStore.swift"), Path("ThreeOneOSFive/helpers/ContainerStore.swift"), Path("ThreeOneOSFive/helpers/VesperDashRemoteSync.swift")]
           missing = [str(path) for path in required if not path.is_file()]
-          if missing:
-              raise SystemExit("Missing required project files: " + ", ".join(missing))
-
-          with Path("ThreeOneOSFive/Info.plist").open("rb") as stream:
-              info = plistlib.load(stream)
-
-          if info.get("UIFileSharingEnabled") is not False:
-              raise SystemExit("UIFileSharingEnabled must be false.")
-          if info.get("LSSupportsOpeningDocumentsInPlace") is not False:
-              raise SystemExit("LSSupportsOpeningDocumentsInPlace must be false.")
-
+          if missing: raise SystemExit("Missing required project files: " + ", ".join(missing))
+          with Path("ThreeOneOSFive/Info.plist").open("rb") as stream: info = plistlib.load(stream)
+          if info.get("UIFileSharingEnabled") is not False: raise SystemExit("UIFileSharingEnabled must be false.")
+          if info.get("LSSupportsOpeningDocumentsInPlace") is not False: raise SystemExit("LSSupportsOpeningDocumentsInPlace must be false.")
           project = Path("ThreeOneOSFive.xcodeproj/project.pbxproj").read_text(encoding="utf-8")
-          if "XCBuildConfiguration" not in project or "Release" not in project:
-              raise SystemExit("Release Xcode build configuration is missing.")
-
+          if "XCBuildConfiguration" not in project or "Release" not in project: raise SystemExit("Release Xcode build configuration is missing.")
           print("Project configuration validation passed. Proceeding to Xcode build.")
           PY
 
@@ -98,58 +76,36 @@ jobs:
           test "$(basename "$APP_DIR")" = "SAKK EXTERNAL.app"
           test -f "$APP_PLIST"
           test -f "$APP_EXECUTABLE"
-          if find "$APP_DIR" -type d -name '*.lproj' -print -quit | grep -q .; then
-            echo 'Localized .lproj folders should be embedded in the SAK executable.' >&2
-            exit 1
-          fi
+          if find "$APP_DIR" -type d -name '*.lproj' -print -quit | grep -q .; then echo 'Localized .lproj folders should be embedded in the SAK executable.' >&2; exit 1; fi
           python3 embed_app_resources.py --verify "$APP_DIR"
           python3 - "$APP_DIR" "$APP_PLIST" <<'PY'
-          import base64
-          import os
-          import plistlib
-          import sys
+          import base64, os, plistlib, sys
           from pathlib import Path
-
-          app_dir = Path(sys.argv[1])
-          plist_path = Path(sys.argv[2])
-          token = os.environ.get("M3SB_PACKAGE_TOKEN") or "ROBO_IOS_BUILD"
-          secret = os.environ.get("M3SB_HMAC_SECRET") or "ROBO_IOS_BUILD_SECRET"
-          token = token.encode("utf-8")
-          secret = secret.encode("utf-8")
-          with plist_path.open("rb") as stream:
-              info = plistlib.load(stream)
-          if info.get("CFBundleVersion") != "49":
-              raise SystemExit("Expected VESPER Build 49.")
-          if info.get("CFBundleDisplayName") != "ROBO iOS" or info.get("CFBundleExecutable") != "SAK":
-              raise SystemExit("The ROBO iOS app display name or executable name is incorrect.")
-          if info.get("UIFileSharingEnabled") or info.get("LSSupportsOpeningDocumentsInPlace"):
-              raise SystemExit("App-wide Documents sharing must remain disabled.")
-          if "M3SB_PACKAGE_TOKEN" in info or "M3SB_HMAC_SECRET" in info:
-              raise SystemExit("Plaintext M3SB keys must not appear in Info.plist.")
+          app_dir, plist_path = Path(sys.argv[1]), Path(sys.argv[2])
+          token = (os.environ.get("M3SB_PACKAGE_TOKEN") or "ROBO_IOS_BUILD").encode()
+          secret = (os.environ.get("M3SB_HMAC_SECRET") or "ROBO_IOS_BUILD_SECRET").encode()
+          with plist_path.open("rb") as stream: info = plistlib.load(stream)
+          if info.get("CFBundleVersion") != "49": raise SystemExit("Expected ROBO iOS Build 49.")
+          if info.get("CFBundleDisplayName") != "ROBO iOS" or info.get("CFBundleExecutable") != "SAK": raise SystemExit("The ROBO iOS app display name or executable name is incorrect.")
+          if info.get("UIFileSharingEnabled") or info.get("LSSupportsOpeningDocumentsInPlace"): raise SystemExit("App-wide Documents sharing must remain disabled.")
+          if "M3SB_PACKAGE_TOKEN" in info or "M3SB_HMAC_SECRET" in info: raise SystemExit("Plaintext M3SB keys must not appear in Info.plist.")
           for name, expected in (("M3SB_PACKAGE_TOKEN_OBFUSCATED", token), ("M3SB_HMAC_SECRET_OBFUSCATED", secret)):
               encoded = info.get(name)
-              if not isinstance(encoded, str):
-                  raise SystemExit("Obfuscated M3SB configuration is missing.")
-              try:
-                  decoded = bytes(byte ^ 0x5A for byte in base64.b64decode(encoded, validate=True))
-              except Exception:
-                  raise SystemExit("Obfuscated M3SB configuration is invalid.")
-              if decoded != expected:
-                  raise SystemExit("Obfuscated M3SB configuration does not match the configured build secret.")
+              if not isinstance(encoded, str): raise SystemExit("Obfuscated M3SB configuration is missing.")
+              try: decoded = bytes(byte ^ 0x5A for byte in base64.b64decode(encoded, validate=True))
+              except Exception: raise SystemExit("Obfuscated M3SB configuration is invalid.")
+              if decoded != expected: raise SystemExit("Obfuscated M3SB configuration does not match the configured build secret.")
           needles = (token, secret, b"api.m3sbapi.shop", b"/api/sdk/verify", "/api/sdk/verify".encode("utf-16le"))
           overlap_size = max(map(len, needles)) - 1
           for path in app_dir.rglob("*"):
-              if not path.is_file():
-                  continue
+              if not path.is_file(): continue
               overlap = b""
               with path.open("rb") as stream:
                   while True:
                       chunk = stream.read(1024 * 1024)
-                      if not chunk:
-                          break
+                      if not chunk: break
                       data = overlap + chunk
-                      if any(needle in data for needle in needles):
-                          raise SystemExit("A plaintext M3SB credential was found in the app bundle.")
+                      if any(needle in data for needle in needles): raise SystemExit("A plaintext M3SB credential was found in the app bundle.")
                       overlap = data[-overlap_size:] if overlap_size > 0 else b""
           print("Verified: M3SB credentials and API endpoint strings are absent as plaintext; 400 MiB executable padding is configured before the resource footer.")
           PY
@@ -159,13 +115,17 @@ jobs:
           M3SB_PACKAGE_TOKEN: ${{ secrets.M3SB_PACKAGE_TOKEN }}
           M3SB_HMAC_SECRET: ${{ secrets.M3SB_HMAC_SECRET }}
 
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ROBO-iOS-IPA-${{ github.run_number }}
+          path: build/ROBO-iOS-Build-49-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Publish IPA release asset
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="sakk-external-build-${GITHUB_RUN_ID}"
-          gh release create "$TAG" build/ROBO-iOS-Build-49-unsigned.ipa \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "VESPER Build ${GITHUB_RUN_ID}" \
-            --notes "Unsigned VESPER IPA built from ${GITHUB_SHA}." \
-            --target "$GITHUB_SHA"
+          TAG="robo-ios-build-${GITHUB_RUN_ID}"
+          gh release create "$TAG" build/ROBO-iOS-Build-49-unsigned.ipa --repo "$GITHUB_REPOSITORY" --title "ROBO iOS Build ${GITHUB_RUN_ID}" --notes "Unsigned ROBO iOS IPA built from ${GITHUB_SHA}." --target "${GITHUB_SHA}"
