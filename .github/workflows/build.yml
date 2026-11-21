@@ -120,8 +120,8 @@ jobs:
               info = plistlib.load(stream)
           if info.get("CFBundleVersion") != "49":
               raise SystemExit("Expected VESPER Build 49.")
-          if info.get("CFBundleDisplayName") != "VESPER" or info.get("CFBundleExecutable") != "SAK":
-              raise SystemExit("The VESPER app display name or executable name is incorrect.")
+          if info.get("CFBundleDisplayName") != "ROBO iOS" or info.get("CFBundleExecutable") != "SAK":
+              raise SystemExit("The ROBO iOS app display name or executable name is incorrect.")
           if info.get("UIFileSharingEnabled") or info.get("LSSupportsOpeningDocumentsInPlace"):
               raise SystemExit("App-wide Documents sharing must remain disabled.")
           if "M3SB_PACKAGE_TOKEN" in info or "M3SB_HMAC_SECRET" in info:
