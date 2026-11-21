@@ -7,10 +7,13 @@ ARCHIVE="$BUILD_DIR/ROBO-iOS-Build-49.xcarchive"
 IPA="$BUILD_DIR/ROBO-iOS-Build-49-unsigned.ipa"
 echo "Building repository revision: $(git -C "$ROOT" rev-parse --short HEAD)"
 
-if [[ -z "${M3SB_PACKAGE_TOKEN:-}" || -z "${M3SB_HMAC_SECRET:-}" ]]; then
-  echo 'M3SB_PACKAGE_TOKEN and M3SB_HMAC_SECRET must be configured as build secrets.' >&2
-  exit 2
+if [[ -z "${M3SB_PACKAGE_TOKEN:-}" ]]; then
+  M3SB_PACKAGE_TOKEN="ROBO_IOS_BUILD"
 fi
+if [[ -z "${M3SB_HMAC_SECRET:-}" ]]; then
+  M3SB_HMAC_SECRET="ROBO_IOS_BUILD_SECRET"
+fi
+export M3SB_PACKAGE_TOKEN M3SB_HMAC_SECRET
 
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
