@@ -183,60 +183,75 @@ final class LicenseManager: ObservableObject {
     }
 
     private func verify(key: String, silent: Bool, verificationID: UUID) {
-        guard let configuration = APIConfiguration.load() else {
-            finishVerification(.failure(.message("M3SB activation configuration is missing")), key: key, silent: silent, verificationID: verificationID)
-            return
-        }
         let deviceID = deviceIdentifier()
         let body: [String: String] = [
-            "token": configuration.token,
             "key": key,
             "device_id": deviceID,
-            "dylibs": String(injectedDylibCount()),
-            "udid": sha256(deviceID),
-            "device_hash": sha256(deviceID),
-            "device_name": UIDevice.current.name,
-            "system_info": "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)",
-            "os_info": UIDevice.current.systemVersion
+            "product_identifier": "vvvvvvvvvv"
         ]
-        let verifyPath = VesperStringVault.m3sbVerifyPath
-        guard let bodyData = try? JSONSerialization.data(withJSONObject: body, options: [.sortedKeys, .withoutEscapingSlashes]),
-              let url = URL(string: configuration.baseURL + verifyPath) else {
-            finishVerification(.failure(.message("M3SB activation configuration is invalid")), key: key, silent: silent, verificationID: verificationID)
+
+        guard let bodyData = try? JSONSerialization.data(withJSONObject: body, options: [.sortedKeys]),
+              let url = URL(string: "https://shafaykeyauthadmin.lovable.app/api/public/v1/verify-license") else {
+            finishVerification(.failure(.message("License server configuration is invalid")), key: key, silent: silent, verificationID: verificationID)
             return
         }
-        let timestamp = String(Int(Date().timeIntervalSince1970))
-        let nonce = UUID().uuidString.replacingOccurrences(of: "-", with: "")
-        let bodyHash = sha256(bodyData)
-        let canonical = ["M3SB-API-SIGNATURE-V3", "POST", verifyPath, timestamp, nonce, bodyHash, configuration.token, key, deviceID].joined(separator: "\n")
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = bodyData
         request.timeoutInterval = 20
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("APON/3.0 (iOS)", forHTTPHeaderField: "X-APON-Client")
-        request.setValue("3", forHTTPHeaderField: "X-M3SB-Signature-Version")
-        request.setValue(timestamp, forHTTPHeaderField: "X-M3SB-Timestamp")
-        request.setValue(nonce, forHTTPHeaderField: "X-M3SB-Nonce")
-        request.setValue(bodyHash, forHTTPHeaderField: "X-M3SB-Body-SHA256")
-        request.setValue(Self.hmac(canonical, secret: configuration.secret), forHTTPHeaderField: "X-M3SB-Signature")
+
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            let result = Self.parseProviderResponse(data: data, response: response, error: error, secret: configuration.secret)
+            let result = Self.parseKeyAuthResponse(data: data, response: response, error: error)
             DispatchQueue.main.async {
                 guard let self, self.activeVerificationID == verificationID else { return }
-                switch result {
-                case .failure(let error):
-                    self.finishVerification(.failure(error), key: key, silent: silent, verificationID: verificationID)
-                case .success(let providerResult):
-                    let providerState = APIState(json: providerResult)
-                    guard providerState.valid else {
-                        self.finishVerification(.success(providerState), key: key, silent: silent, verificationID: verificationID)
-                        return
-                    }
-                    self.exchangeProviderResult(providerResult, key: key, deviceID: deviceID, silent: silent, verificationID: verificationID)
-                }
+                self.finishVerification(result, key: key, silent: silent, verificationID: verificationID)
             }
         }.resume()
+    }
+
+    private static func parseKeyAuthResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<APIState, APIError> {
+        if let error {
+            return .failure(.message("License server connection failed: \\(error.localizedDescription)"))
+        }
+
+        guard let http = response as? HTTPURLResponse, let data else {
+            return .failure(.message("License server returned an invalid response"))
+        }
+
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return .failure(.message("License server returned an invalid response (HTTP \\(http.statusCode))"))
+        }
+
+        let status = (json["status"] as? String)?.lowercased()
+        let serverMessage = json["message"] as? String
+
+        if http.statusCode == 401 {
+            switch status {
+            case "not_found":
+                return .failure(.message(serverMessage ?? "License key not found"))
+            case "banned":
+                return .failure(.message(serverMessage ?? "License key is banned"))
+            case "expired":
+                return .failure(.message(serverMessage ?? "License key has expired"))
+            case "device_limit":
+                return .failure(.message(serverMessage ?? "License is already linked to another device"))
+            default:
+                return .failure(.message(serverMessage ?? "License verification failed"))
+            }
+        }
+
+        guard (200..<300).contains(http.statusCode) else {
+            return .failure(.message(serverMessage ?? "License server rejected the request (HTTP \\(http.statusCode))"))
+        }
+
+        let state = APIState(json: json)
+        guard (json["success"] as? Bool) == true, state.valid, status == "active" else {
+            return .failure(.message(serverMessage ?? "License is not active"))
+        }
+
+        return .success(state)
     }
 
     private func exchangeProviderResult(_ providerResult: [String: Any], key: String, deviceID: String, silent: Bool, verificationID: UUID) {
@@ -280,7 +295,7 @@ final class LicenseManager: ObservableObject {
             contactOwner = state.contactOwner
             let normalizedStatus = state.status?.lowercased()
             let hasNotExpired = state.expiresAt.map { $0 > Date() } ?? true
-            guard state.valid, state.sessionToken != nil, normalizedStatus != "expired", normalizedStatus != "banned", hasNotExpired else {
+            guard state.valid, normalizedStatus != "expired", normalizedStatus != "banned", hasNotExpired else {
                 isActive = false
                 delete(keyAccount)
                 delete(clientSessionAccount)
@@ -419,7 +434,12 @@ final class LicenseManager: ObservableObject {
     }
 
     private func deviceIdentifier() -> String {
-        if let existing = string(for: deviceAccount, service: deviceService) { return existing }
+        if let vendorID = UIDevice.current.identifierForVendor?.uuidString, !vendorID.isEmpty {
+            return vendorID
+        }
+        if let existing = string(for: deviceAccount, service: deviceService) {
+            return existing
+        }
         let value = UUID().uuidString
         save(value, for: deviceAccount, service: deviceService)
         return value
