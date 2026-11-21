@@ -21,7 +21,7 @@ struct ThreeOneOSFiveApp: App {
         // Bundle name, executable name, display name and icon may differ after
         // signing/repackaging; do not block or terminate the app for that.
         _identityViolation = State(initialValue: false)
-        log("app: SAKK EXTERNAL launching — iOS \(AppInfo.osVersion) (\(AppInfo.osBuild)) \(AppInfo.machineName)")
+        log("app: ROBO iOS launching — iOS \(AppInfo.osVersion) (\(AppInfo.osBuild)) \(AppInfo.machineName)")
     }
 
     private var language: AppLanguage {
@@ -289,7 +289,7 @@ private struct WelcomeView: View {
                     .frame(height: 112)
                     .clipShape(Circle())
                     .overlay(Circle().stroke(AppTheme.accent.opacity(0.7), lineWidth: 1))
-                Text("WELCOME TO SAKK EXTERNAL")
+                Text("WELCOME TO ROBO iOS")
                     .font(.system(size: 20, weight: .black, design: .rounded))
                     .tracking(1.2)
                     .foregroundStyle(.white)
