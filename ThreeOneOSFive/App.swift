@@ -220,26 +220,15 @@ class AppState: ObservableObject {
             return
         }
 
-        let applicable = KernelExploit.isApplicable(
-            major: v.major,
-            minor: v.minor,
-            patch: v.patch,
-            build: AppInfo.osBuild
-        )
-        guard applicable else { return }
-
-        refreshKernelExploitStatus()
-        maybeAutoRunKernelExploit()
+        // Do not execute low-level exploit code automatically during app startup.
+        // Keeping startup passive prevents a failed/unsupported low-level operation
+        // from terminating the UI before the license screen is usable.
+        log("app: startup support check completed; low-level operation is not auto-started")
     }
 
     private func maybeAutoRunKernelExploit() {
-        guard !kernelExploitRunning,
-              !exploitStatus.isSuccess,
-              !exploitStatus.isFailed,
-              !autoRunAttempted else { return }
-        autoRunAttempted = true
-        log("app: starting kernel exploit automatically")
-        runKernelExploitIfNeeded()
+        // Intentionally disabled. Startup must remain stable and non-invasive.
+        return
     }
 
     private func refreshKernelExploitStatus() {
