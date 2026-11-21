@@ -316,7 +316,7 @@ struct ContentView: View {
             HStack {
                 panelTitle("PATCH FILES", icon: "checkmark.shield.fill")
                 Spacer()
-                Text("SAKK EXTERNAL")
+                Text("ROBO iOS")
                     .font(.system(size: 9, weight: .black, design: .rounded))
                     .foregroundStyle(AppTheme.secondaryAccent)
             }
@@ -389,7 +389,7 @@ struct ContentView: View {
                 }
             }
 
-            Text("STATUS IS MANAGED BY SAKK EXTERNAL")
+            Text("STATUS IS MANAGED BY ROBO iOS")
                 .font(.system(size: 10, weight: .medium, design: .rounded))
                 .foregroundStyle(AppTheme.paper.opacity(0.52))
                 .padding(.top, 5)
@@ -416,7 +416,7 @@ struct ContentView: View {
                     .background(AppTheme.pageBackground.ignoresSafeArea())
                     .navigationTitle(appLanguage.text("vesper.tab.profile"))
             }
-            moreLink(title: appLanguage.text("vesper.tab.developer"), subtitle: "SAKK EXTERNAL", icon: "hammer.circle") {
+            moreLink(title: appLanguage.text("vesper.tab.developer"), subtitle: "ROBO iOS", icon: "hammer.circle") {
                 ScrollView(showsIndicators: false) { developerTab.padding(.horizontal, 16).padding(.vertical, 14) }
                     .background(AppTheme.pageBackground.ignoresSafeArea())
                     .navigationTitle(appLanguage.text("vesper.tab.developer"))
@@ -716,13 +716,13 @@ struct ContentView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 15, style: .continuous).stroke(AppTheme.secondaryAccent.opacity(0.72), lineWidth: 1))
             VStack(alignment: .leading, spacing: 3) {
-                Text("SAKK EXTERNAL")
+                Text("ROBO iOS")
                     .font(.system(size: 18, weight: .black, design: .rounded))
                     .tracking(0.5)
                     .foregroundStyle(AppTheme.paper)
                     .lineLimit(1)
                     .minimumScaleFactor(0.68)
-                Text("SAKK EXTERNAL • OFFICIAL INFO")
+                Text("ROBO iOS • OFFICIAL INFO")
                     .font(.system(size: 10, weight: .bold, design: .rounded))
                     .tracking(0.6)
                     .foregroundStyle(AppTheme.accent)
@@ -815,7 +815,7 @@ struct ContentView: View {
                         .foregroundStyle(AppTheme.secondaryAccent)
                         .padding(.vertical, 10)
                 } else if patchStore.hasCompletedInitialSync {
-                    Text("NO \(category.uppercased()) PATCHES — ADD FILES FROM SAKK EXTERNAL")
+                    Text("NO \(category.uppercased()) PATCHES — ADD FILES FROM ROBO iOS")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(.white.opacity(0.5))
                         .padding(.vertical, 10)
@@ -967,7 +967,7 @@ struct ContentView: View {
                 .tracking(1.2)
                 .foregroundStyle(.white.opacity(0.72))
             Spacer()
-            Text("SAKK EXTERNAL • READY")
+            Text("ROBO iOS • READY")
                 .font(.system(size: 9, weight: .bold, design: .rounded))
                 .foregroundStyle(AppTheme.accent.opacity(0.8))
         }
@@ -988,7 +988,7 @@ struct ContentView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(AppTheme.secondaryAccent.opacity(0.65), lineWidth: 1))
             VStack(spacing: 4) {
-                Text("SAKK EXTERNAL")
+                Text("ROBO iOS")
                     .font(.system(size: 16, weight: .black, design: .rounded))
                     .tracking(0.6)
                     .foregroundStyle(AppTheme.paper)
@@ -1040,7 +1040,7 @@ struct ContentView: View {
             .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(AppTheme.secondaryAccent.opacity(0.48), lineWidth: 1))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Open official SAKK EXTERNAL TikTok @rey_rd03")
+        .accessibilityLabel("Open official ROBO iOS TikTok @rey_rd03")
     }
 
     private var telegramCard: some View {
@@ -1061,7 +1061,7 @@ struct ContentView: View {
                         .foregroundStyle(AppTheme.secondaryAccent)
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
-                    Text("SAKK EXTERNAL • COMMUNITY")
+                    Text("ROBO iOS • COMMUNITY")
                         .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundStyle(AppTheme.paper)
                         .lineLimit(1)
@@ -1077,7 +1077,7 @@ struct ContentView: View {
             .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(AppTheme.secondaryAccent.opacity(0.48), lineWidth: 1))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Open SAKK EXTERNAL Discord server")
+        .accessibilityLabel("Open ROBO iOS Discord server")
     }
 
     private var ownerCard: some View {
@@ -1114,7 +1114,7 @@ struct ContentView: View {
             .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(AppTheme.accent.opacity(0.45), lineWidth: 1))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Open SAKK EXTERNAL owner Discord")
+        .accessibilityLabel("Open ROBO iOS owner Discord")
     }
 
     private func channelButton(title: String, url: String) -> some View {
