@@ -26,7 +26,7 @@ struct LicenseActivationView: View {
                                 .padding(.bottom, 18)
 
                             VStack(spacing: 6) {
-                                Text("ROBO iOS")
+                                Text("MONITE")
                                     .font(.system(size: 26, weight: .black, design: .rounded))
                                     .tracking(1.1)
                                     .foregroundStyle(.white)
@@ -36,9 +36,9 @@ struct LicenseActivationView: View {
                                 Text("LICENSE ACCESS")
                                     .font(.system(size: 11, weight: .black, design: .rounded))
                                     .tracking(2.2)
-                                    .foregroundStyle(AppTheme.secondaryAccent)
+                                    .foregroundStyle(Color.white)
 
-                                Text("ROBO iOS • OFFICIAL ACCESS")
+                                Text("MONITE • OFFICIAL ACCESS")
                                     .font(.system(size: 10, weight: .bold, design: .rounded))
                                     .tracking(0.8)
                                     .foregroundStyle(.white.opacity(0.50))
@@ -55,7 +55,7 @@ struct LicenseActivationView: View {
                                 .offset(y: introVisible ? 0 : 20)
                                 .id("activation-card")
 
-                            Text("ROBO iOS • SECURE LICENSE CHECK")
+                            Text("MONITE • SECURE LICENSE CHECK")
                                 .font(.system(size: 9, weight: .bold, design: .rounded))
                                 .tracking(0.7)
                                 .foregroundStyle(.white.opacity(0.38))
@@ -93,18 +93,18 @@ struct LicenseActivationView: View {
     private var brandMark: some View {
         ZStack {
             Circle()
-                .fill(AppTheme.accent.opacity(0.18))
+                .fill(Color.white.opacity(0.18))
                 .frame(width: 128, height: 128)
                 .blur(radius: 24)
 
             Circle()
-                .stroke(AppTheme.accent.opacity(0.28), lineWidth: 1)
+                .stroke(Color.white.opacity(0.28), lineWidth: 1)
                 .frame(width: 112, height: 112)
 
             Circle()
                 .trim(from: 0.08, to: 0.72)
                 .stroke(
-                    LinearGradient(colors: [AppTheme.accent, AppTheme.secondaryAccent, .clear], startPoint: .topLeading, endPoint: .bottomTrailing),
+                    LinearGradient(colors: [Color.white, Color.white, .clear], startPoint: .topLeading, endPoint: .bottomTrailing),
                     style: StrokeStyle(lineWidth: 2.5, lineCap: .round)
                 )
                 .frame(width: 120, height: 120)
@@ -116,13 +116,13 @@ struct LicenseActivationView: View {
                 .scaledToFit()
                 .frame(width: 88, height: 88)
                 .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(AppTheme.secondaryAccent.opacity(0.82), lineWidth: 1.5))
-                .shadow(color: AppTheme.secondaryAccent.opacity(logoBreathing ? 0.34 : 0.12), radius: logoBreathing ? 22 : 10)
+                .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(Color.white.opacity(0.82), lineWidth: 1.5))
+                .shadow(color: Color.white.opacity(logoBreathing ? 0.34 : 0.12), radius: logoBreathing ? 22 : 10)
         }
         .scaleEffect(logoBreathing ? 1.02 : 0.96)
         .animation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true), value: logoBreathing)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("ROBO iOS")
+        .accessibilityLabel("MONITE")
     }
 
     private var activationCard: some View {
@@ -132,7 +132,7 @@ struct LicenseActivationView: View {
                     .font(.system(size: 17, weight: .black))
                     .foregroundStyle(AppTheme.ink)
                     .frame(width: 44, height: 44)
-                    .background(AppTheme.accent, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .rotationEffect(.degrees(manager.isBusy ? 180 : 0))
                     .animation(.easeInOut(duration: 0.35), value: manager.isBusy)
 
@@ -141,18 +141,18 @@ struct LicenseActivationView: View {
                         .font(.system(size: 14, weight: .black, design: .rounded))
                         .tracking(0.4)
                         .foregroundStyle(.white)
-                    Text("ROBO iOS • LICENSE")
+                    Text("MONITE • LICENSE")
                         .font(.system(size: 9, weight: .bold, design: .rounded))
                         .tracking(1.2)
-                        .foregroundStyle(AppTheme.secondaryAccent)
+                        .foregroundStyle(Color.white)
                 }
                 Spacer(minLength: 0)
                 Image(systemName: "checkmark.seal.fill")
-                    .foregroundStyle(AppTheme.accent.opacity(0.82))
+                    .foregroundStyle(Color.white.opacity(0.82))
                     .font(.system(size: 18))
             }
 
-            Text("Enter your ROBO iOS license key to unlock the panel.")
+            Text("Enter your MONITE license key to unlock the panel.")
                 .font(.system(size: 13, weight: .medium, design: .rounded))
                 .foregroundStyle(.white.opacity(0.66))
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -162,12 +162,12 @@ struct LicenseActivationView: View {
                 Text("LICENSE KEY")
                     .font(.system(size: 9, weight: .black, design: .rounded))
                     .tracking(1.5)
-                    .foregroundStyle(AppTheme.secondaryAccent)
+                    .foregroundStyle(Color.white)
 
                 HStack(spacing: 10) {
                     Image(systemName: "key.horizontal.fill")
                         .font(.system(size: 15, weight: .bold))
-                        .foregroundStyle(keyFocused ? AppTheme.accent : .white.opacity(0.46))
+                        .foregroundStyle(keyFocused ? Color.white : .white.opacity(0.46))
                     TextField("Enter license key", text: $key)
                         .focused($keyFocused)
                         .textInputAutocapitalization(.never)
@@ -176,7 +176,7 @@ struct LicenseActivationView: View {
                         .onSubmit { activate() }
                         .font(.system(size: 15, weight: .medium, design: .monospaced))
                         .foregroundStyle(.white)
-                        .tint(AppTheme.accent)
+                        .tint(Color.white)
                         .accessibilityIdentifier("license-field")
                 }
                 .padding(.horizontal, 14)
@@ -184,7 +184,7 @@ struct LicenseActivationView: View {
                 .background(AppTheme.pageBackground.opacity(0.86), in: RoundedRectangle(cornerRadius: 15, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 15, style: .continuous)
-                        .stroke(keyFocused ? AppTheme.accent.opacity(0.85) : .white.opacity(0.12), lineWidth: keyFocused ? 1.4 : 1)
+                        .stroke(keyFocused ? Color.white.opacity(0.85) : .white.opacity(0.12), lineWidth: keyFocused ? 1.4 : 1)
                 )
                 .animation(.easeOut(duration: 0.18), value: keyFocused)
             }
@@ -198,7 +198,7 @@ struct LicenseActivationView: View {
                     }
                 }
                 .fontWeight(.black)
-                .foregroundStyle(AppTheme.secondaryAccent)
+                .foregroundStyle(Color.white)
                 .accessibilityIdentifier("license-contact-owner")
             }
             .font(.system(size: 12, weight: .semibold, design: .rounded))
@@ -218,11 +218,11 @@ struct LicenseActivationView: View {
                 .foregroundStyle(AppTheme.ink)
                 .frame(maxWidth: .infinity, minHeight: 54)
                 .background(
-                    LinearGradient(colors: [AppTheme.secondaryAccent, AppTheme.accent], startPoint: .topLeading, endPoint: .bottomTrailing),
+                    LinearGradient(colors: [Color.white, Color.white], startPoint: .topLeading, endPoint: .bottomTrailing),
                     in: RoundedRectangle(cornerRadius: 16, style: .continuous)
                 )
-                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(AppTheme.secondaryAccent.opacity(0.52), lineWidth: 1))
-                .shadow(color: AppTheme.accent.opacity(0.32), radius: 14, y: 6)
+                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.white.opacity(0.52), lineWidth: 1))
+                .shadow(color: Color.white.opacity(0.32), radius: 14, y: 6)
             }
             .buttonStyle(.plain)
             .disabled(key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || manager.isBusy)
@@ -237,8 +237,8 @@ struct LicenseActivationView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .background(AppTheme.accent.opacity(0.14), in: RoundedRectangle(cornerRadius: 13, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: 13, style: .continuous).stroke(AppTheme.accent.opacity(0.30), lineWidth: 1))
+                    .background(Color.white.opacity(0.14), in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 13, style: .continuous).stroke(Color.white.opacity(0.30), lineWidth: 1))
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
 
@@ -248,7 +248,7 @@ struct LicenseActivationView: View {
         .background(AppTheme.consoleBackground.opacity(0.96), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(LinearGradient(colors: [AppTheme.secondaryAccent.opacity(0.68), AppTheme.accent.opacity(0.16), AppTheme.accent.opacity(0.48)], startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1)
+                .stroke(LinearGradient(colors: [Color.white.opacity(0.68), Color.white.opacity(0.16), Color.white.opacity(0.48)], startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1)
         )
         .shadow(color: .black.opacity(0.28), radius: 20, y: 12)
         .animation(.easeOut(duration: 0.22), value: manager.message)
@@ -273,13 +273,13 @@ struct LoginBackdrop: View {
             )
 
             Circle()
-                .fill(AppTheme.accent.opacity(0.15))
+                .fill(Color.white.opacity(0.15))
                 .frame(width: 260, height: 260)
                 .blur(radius: 54)
                 .offset(x: drift ? 138 : -128, y: drift ? -265 : -205)
 
             Circle()
-                .fill(AppTheme.secondaryAccent.opacity(0.10))
+                .fill(Color.white.opacity(0.10))
                 .frame(width: 220, height: 220)
                 .blur(radius: 52)
                 .offset(x: drift ? -130 : 118, y: drift ? 285 : 225)
