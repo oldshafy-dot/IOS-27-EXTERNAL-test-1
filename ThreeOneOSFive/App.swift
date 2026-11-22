@@ -60,19 +60,16 @@ struct ThreeOneOSFiveApp: App {
                 presentWelcomeOnce()
             }
             .onAppear {
-                checkReleasePolicy()
+                // Keep launch passive. License verification is started explicitly
+                // from the license screen to prevent startup-time network/session
+                // work from terminating the UI before it is rendered.
                 if licenseManager.isActive {
                     appState.detectSupport()
                     presentWelcomeOnce()
                 }
-                licenseManager.beginLaunchSession()
             }
             .onChange(of: scenePhase) { phase in
-                if phase == .active {
-                    checkReleasePolicy()
-                    guard licenseManager.hasRememberedKey else { return }
-                    licenseManager.beginLaunchSession()
-                } else {
+                if phase != .active {
                     licenseManager.cancelPendingSilentCheck()
                 }
             }
