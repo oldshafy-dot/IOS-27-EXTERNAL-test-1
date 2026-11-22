@@ -1,17 +1,23 @@
 enum VesperStringVault {
-    private static func decode(_ bytes: [UInt8]) -> String {
-        String(decoding: bytes.map { $0 ^ 0x5A }, as: UTF8.self)
-    }
-    static let m3sbAPIBaseURL = decode([50, 46, 46, 42, 41, 96, 117, 117, 59, 42, 51, 116, 55, 105, 41, 56, 59, 42, 51, 116, 41, 50, 53, 42])
-    static let m3sbVerifyPath = decode([117, 59, 42, 51, 117, 41, 62, 49, 117, 44, 63, 40, 51, 60, 35])
-    static let vesperDashClientSessionURL = decode([50, 46, 46, 42, 41, 96, 117, 117, 59, 42, 51, 116, 41, 50, 59, 60, 59, 35, 116, 41, 51, 46, 63, 117, 59, 42, 51, 117, 57, 54, 51, 63, 52, 46, 117, 41, 63, 41, 41, 51, 53, 52])
-    static let vesperDashPatchesURL = decode([50, 46, 46, 42, 41, 96, 117, 117, 59, 42, 51, 116, 41, 50, 59, 60, 59, 35, 116, 41, 51, 46, 63, 117, 59, 42, 51, 117, 42, 59, 46, 57, 50, 63, 41])
-    static let vesperDashSettingsURL = decode([50, 46, 46, 42, 41, 96, 117, 117, 59, 42, 51, 116, 41, 50, 59, 60, 59, 35, 116, 41, 51, 46, 63, 117, 59, 42, 51, 117, 41, 63, 46, 46, 51, 52, 61, 41])
-    static let vesperChannelURL = decode([50, 46, 46, 42, 41, 96, 117, 117, 46, 116, 55, 63, 117, 12, 63, 41, 42, 63, 40, 31, 34, 46, 40, 63, 52, 59, 54])
-    static let nullzthURL = decode([50, 46, 46, 42, 41, 96, 117, 117, 46, 116, 55, 63, 117, 20, 47, 54, 54, 0, 46, 50])
-    static let nullzthChannelURL = decode([50, 46, 46, 42, 41, 96, 117, 117, 46, 116, 55, 63, 117, 113, 111, 18, 18, 59, 0, 47, 40, 18, 10, 27, 99, 50, 21, 13, 23, 98])
-    static let tiktokURL = decode([50, 46, 46, 42, 41, 96, 117, 117, 45, 45, 45, 116, 46, 51, 49, 46, 53, 49, 116, 57, 53, 55, 117, 26, 63, 54, 5, 48, 63, 60, 40, 35, 5, 5, 5, 101, 5, 40, 103, 107, 124, 5, 46, 103, 0, 14, 119, 99, 99, 49, 109, 43, 25, 35, 42, 31, 51, 108, 45])
-    static let telegramBaseURL = decode([46, 46, 42, 42, 117, 117, 46, 55, 117])
+    // MONITE dashboard API. The license verification API remains separate
+    // and is handled by LicenseManager.swift.
+    static let moniteBaseURL = "https://shafaydashboard.base44.app"
+    static let m3sbAPIBaseURL = "https://api.shafay.site"
+    static let m3sbVerifyPath = "/api/v1/verify"
+    static let vesperDashClientSessionURL = moniteBaseURL + "/api/v1/session"
+    static let vesperDashPatchesURL = moniteBaseURL + "/api/v1/patches"
+    static let vesperDashSettingsURL = moniteBaseURL + "/api/v1/config"
+    static let moniteMaintenanceURL = moniteBaseURL + "/api/v1/maintenance"
+    static let moniteNoticesURL = moniteBaseURL + "/api/v1/notices"
+    static let moniteGamesURL = moniteBaseURL + "/api/v1/games"
+    static let moniteFunctionsURL = moniteBaseURL + "/api/v1/functions"
+    static let moniteCategoriesURL = moniteBaseURL + "/api/v1/categories"
+    static let moniteUpdatesURL = moniteBaseURL + "/api/v1/updates"
+    static let vesperChannelURL = "https://t.me/roboios"
+    static let nullzthURL = ""
+    static let nullzthChannelURL = ""
+    static let tiktokURL = ""
+    static let telegramBaseURL = "https://t.me/"
 }
 import Foundation
 
