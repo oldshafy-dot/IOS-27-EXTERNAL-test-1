@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-IPA="${1:-$ROOT/build/ROBO-iOS-Build-49-unsigned.ipa}"
+IPA="${1:-$ROOT/build/MONITE-Build-49-unsigned.ipa}"
 
 if ! command -v unzip >/dev/null 2>&1; then
   echo "Error: unzip is required." >&2
@@ -14,7 +14,7 @@ if [[ ! -f "$IPA" ]]; then
   "$ROOT/build_unsigned.sh"
 fi
 
-WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/sakk-esign.XXXXXX")"
+WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/monite-esign.XXXXXX")"
 trap 'rm -rf "$WORK_DIR"' EXIT
 
 unzip -q "$IPA" -d "$WORK_DIR/unpacked"
@@ -28,7 +28,6 @@ fi
 APP="$(find "$WORK_DIR/unpacked/Payload" -maxdepth 1 -type d -name '*.app' -print -quit)"
 if [[ -e "$APP/embedded.mobileprovision" || -e "$APP/_CodeSignature" ]]; then
   echo "Error: the IPA contains an existing provisioning profile or code signature." >&2
-  echo "Build with build_unsigned.sh so eSign can apply the selected certificate and profile." >&2
   exit 1
 fi
 
