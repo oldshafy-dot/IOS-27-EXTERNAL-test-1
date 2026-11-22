@@ -3,8 +3,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 BUILD_DIR="$ROOT/build"
-ARCHIVE="$BUILD_DIR/ROBO-iOS-Build-49.xcarchive"
-IPA="$BUILD_DIR/ROBO-iOS-Build-49-unsigned.ipa"
+ARCHIVE="$BUILD_DIR/MONITE-Build-49.xcarchive"
+IPA="$BUILD_DIR/MONITE-Build-49-unsigned.ipa"
 echo "Building repository revision: $(git -C "$ROOT" rev-parse --short HEAD)"
 
 if [[ -z "${M3SB_PACKAGE_TOKEN:-}" ]]; then
@@ -31,16 +31,14 @@ xcodebuild \
   CODE_SIGN_IDENTITY='' \
   archive
 
-APP="$ARCHIVE/Products/Applications/SAKK EXTERNAL.app"
+APP="$ARCHIVE/Products/Applications/MONITE.app"
 test -d "$APP"
-# Remote patches must never be embedded in the signed app. Remove packages
-# from every possible Xcode resource layout, not only from the app root.
 find "$APP" -type f -name '*.3105' -print -delete
 if find "$APP" -type f -name '*.3105' -print -quit | grep -q .; then
   echo "Error: a local .3105 patch remains inside the app bundle." >&2
   exit 1
 fi
-echo "Verified no bundled local patch resources; patches are loaded only from ROBO iOS online."
+echo "Verified no bundled local patch resources."
 
 /usr/libexec/PlistBuddy -c "Set :CFBundleExecutable SAK" "$APP/Info.plist" || true
 /usr/libexec/PlistBuddy -c "Set :CFBundlePackageType APPL" "$APP/Info.plist" || true
@@ -69,8 +67,6 @@ print("Embedded obfuscated M3SB configuration in the app bundle.")
 PY
 
 test -f "$APP/SAK"
-# Keep the requested 400 MiB filler before the resource footer is appended.
-# The footer must remain at EOF so embed_app_resources.py can verify it.
 printf 'Adding 400 MiB executable padding...\n'
 dd if=/dev/zero bs=1m count=400 2>/dev/null >> "$APP/SAK"
 python3 "$ROOT/embed_app_resources.py" "$APP"
