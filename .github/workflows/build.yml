@@ -1,4 +1,4 @@
-name: Build ROBO iOS IPA with obfuscated M3SB activation
+name: Build MONITE IPA with obfuscated M3SB activation
 
 on:
   workflow_dispatch:
@@ -61,19 +61,19 @@ jobs:
           M3SB_HMAC_SECRET: ${{ secrets.M3SB_HMAC_SECRET }}
 
       - name: Prepare IPA
-        run: ./build_esign_ready_ipa.sh build/ROBO-iOS-Build-49-unsigned.ipa
+        run: ./build_esign_ready_ipa.sh build/MONITE-Build-49-unsigned.ipa
 
       - name: Verify obfuscated configuration, app identity and lean executable
         run: |
           set -euo pipefail
-          rm -rf /tmp/sakk-external-ipa-check
-          mkdir -p /tmp/sakk-external-ipa-check
-          unzip -q build/ROBO-iOS-Build-49-unsigned.ipa -d /tmp/sakk-external-ipa-check
-          APP_DIR="$(find /tmp/sakk-external-ipa-check/Payload -maxdepth 1 -name '*.app' -type d -print -quit)"
+          rm -rf /tmp/monite-ipa-check
+          mkdir -p /tmp/monite-ipa-check
+          unzip -q build/MONITE-Build-49-unsigned.ipa -d /tmp/monite-ipa-check
+          APP_DIR="$(find /tmp/monite-ipa-check/Payload -maxdepth 1 -name '*.app' -type d -print -quit)"
           APP_PLIST="$APP_DIR/Info.plist"
           APP_EXECUTABLE="$APP_DIR/SAK"
           test "$(wc -c < "$APP_EXECUTABLE" | tr -d ' ')" -ge $((400 * 1024 * 1024))
-          test "$(basename "$APP_DIR")" = "SAKK EXTERNAL.app"
+          test "$(basename "$APP_DIR")" = "MONITE.app"
           test -f "$APP_PLIST"
           test -f "$APP_EXECUTABLE"
           if find "$APP_DIR" -type d -name '*.lproj' -print -quit | grep -q .; then echo 'Localized .lproj folders should be embedded in the SAK executable.' >&2; exit 1; fi
@@ -85,8 +85,8 @@ jobs:
           token = (os.environ.get("M3SB_PACKAGE_TOKEN") or "ROBO_IOS_BUILD").encode()
           secret = (os.environ.get("M3SB_HMAC_SECRET") or "ROBO_IOS_BUILD_SECRET").encode()
           with plist_path.open("rb") as stream: info = plistlib.load(stream)
-          if info.get("CFBundleVersion") != "49": raise SystemExit("Expected ROBO iOS Build 49.")
-          if info.get("CFBundleDisplayName") != "ROBO iOS" or info.get("CFBundleExecutable") != "SAK": raise SystemExit("The ROBO iOS app display name or executable name is incorrect.")
+          if info.get("CFBundleVersion") != "49": raise SystemExit("Expected MONITE Build 49.")
+          if info.get("CFBundleDisplayName") != "MONITE" or info.get("CFBundleExecutable") != "SAK": raise SystemExit("The MONITE app display name or executable name is incorrect.")
           if info.get("UIFileSharingEnabled") or info.get("LSSupportsOpeningDocumentsInPlace"): raise SystemExit("App-wide Documents sharing must remain disabled.")
           if "M3SB_PACKAGE_TOKEN" in info or "M3SB_HMAC_SECRET" in info: raise SystemExit("Plaintext M3SB keys must not appear in Info.plist.")
           for name, expected in (("M3SB_PACKAGE_TOKEN_OBFUSCATED", token), ("M3SB_HMAC_SECRET_OBFUSCATED", secret)):
@@ -109,7 +109,7 @@ jobs:
                       overlap = data[-overlap_size:] if overlap_size > 0 else b""
           print("Verified: M3SB credentials and API endpoint strings are absent as plaintext; 400 MiB executable padding is configured before the resource footer.")
           PY
-          IPA_BYTES="$(wc -c < build/ROBO-iOS-Build-49-unsigned.ipa | tr -d ' ')"
+          IPA_BYTES="$(wc -c < build/MONITE-Build-49-unsigned.ipa | tr -d ' ')"
           echo "Compressed IPA size: ${IPA_BYTES} bytes"
         env:
           M3SB_PACKAGE_TOKEN: ${{ secrets.M3SB_PACKAGE_TOKEN }}
@@ -118,8 +118,8 @@ jobs:
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ROBO-iOS-IPA-${{ github.run_number }}
-          path: build/ROBO-iOS-Build-49-unsigned.ipa
+          name: MONITE-IPA-${{ github.run_number }}
+          path: build/MONITE-Build-49-unsigned.ipa
           if-no-files-found: error
           retention-days: 7
 
@@ -127,5 +127,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="robo-ios-build-${GITHUB_RUN_ID}"
-          gh release create "$TAG" build/ROBO-iOS-Build-49-unsigned.ipa --repo "$GITHUB_REPOSITORY" --title "ROBO iOS Build ${GITHUB_RUN_ID}" --notes "Unsigned ROBO iOS IPA built from ${GITHUB_SHA}." --target "${GITHUB_SHA}"
+          TAG="monite-build-${GITHUB_RUN_ID}"
+          gh release create "$TAG" build/MONITE-Build-49-unsigned.ipa --repo "$GITHUB_REPOSITORY" --title "MONITE Build ${GITHUB_RUN_ID}" --notes "Unsigned MONITE IPA built from ${GITHUB_SHA}." --target "${GITHUB_SHA}"
