@@ -36,14 +36,14 @@ final class MoniteAPIClient {
     }
 
     func loadSnapshot(sessionToken: String?) async -> Snapshot {
-        async let maintenance = optionalGet(path: "/api/v1/maintenance", sessionToken: sessionToken)
-        async let config = optionalGet(path: "/api/v1/config", sessionToken: sessionToken)
-        async let notices = optionalGet(path: "/api/v1/notices", sessionToken: sessionToken)
-        async let games = optionalGet(path: "/api/v1/games", sessionToken: sessionToken)
-        async let functions = optionalGet(path: "/api/v1/functions", sessionToken: sessionToken)
-        async let categories = optionalGet(path: "/api/v1/categories", sessionToken: sessionToken)
-        async let patches = optionalGet(path: "/api/v1/patches", sessionToken: sessionToken)
-        async let updates = optionalGet(path: "/api/v1/updates", sessionToken: sessionToken)
+        async let maintenance = optionalGet(path: "/api/public/maintenance?bundle_id=monite.external", sessionToken: nil)
+        async let config = optionalGet(path: "/api/public/notices?bundle_id=monite.external", sessionToken: nil)
+        async let notices = optionalGet(path: "/api/public/notices?bundle_id=monite.external", sessionToken: nil)
+        async let games = optionalGet(path: "/api/public/patches?bundle_id=monite.external", sessionToken: nil)
+        async let functions = optionalGet(path: "/api/public/patches?bundle_id=monite.external", sessionToken: nil)
+        async let categories = optionalGet(path: "/api/public/patches?bundle_id=monite.external", sessionToken: nil)
+        async let patches = optionalGet(path: "/api/public/patches?bundle_id=monite.external", sessionToken: nil)
+        async let updates = optionalGet(path: "/api/public/updates?bundle_id=monite.external", sessionToken: nil)
 
         return await Snapshot(
             maintenance: maintenance,
