@@ -35,7 +35,7 @@ final class LicenseManager: ObservableObject {
 
     init() {
         // Keep the app available from the saved key while any revalidation runs silently.
-        isActive = string(for: keyAccount) != nil
+        isActive = false
         hasExpiryInformation = string(for: expiryKnownAccount) == "true"
         expiryDateWasProvided = string(for: expiryPresentAccount) == "true"
         if let value = string(for: expirationAccount), let timestamp = Double(value) {
@@ -60,24 +60,19 @@ final class LicenseManager: ObservableObject {
             message = "Key required — enter your access key"
             return
         }
-        isActive = true
-        isLoadingScreen = false
+        isActive = false
+        isLoadingScreen = true
         guard silentCheckID == nil else { return }
-        let checkID = UUID()
-        silentCheckID = checkID
-        let workItem = DispatchWorkItem { [weak self] in
-            guard let self, self.silentCheckID == checkID else { return }
-            self.silentCheckID = nil
-            self.silentCheckWorkItem = nil
-            guard !self.isBusy, let key = self.string(for: self.keyAccount) else { return }
-            self.recordCheckAttempt()
-            self.isBusy = true
-            let verificationID = UUID()
-            self.activeVerificationID = verificationID
-            self.verify(key: key, silent: true, verificationID: verificationID)
+        guard let key = string(for: keyAccount) else {
+            isLoadingScreen = false
+            message = "Key required — enter your access key"
+            return
         }
-        silentCheckWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: workItem)
+        recordCheckAttempt()
+        isBusy = true
+        let verificationID = UUID()
+        activeVerificationID = verificationID
+        verify(key: key, silent: true, verificationID: verificationID)
     }
 
     func cancelPendingSilentCheck() {
@@ -187,7 +182,7 @@ final class LicenseManager: ObservableObject {
         let body: [String: String] = [
             "key": key,
             "device_id": deviceID,
-            "product_identifier": "vvvvvvvvvv"
+            "product_identifier": "monite"
         ]
 
         guard let bodyData = try? JSONSerialization.data(withJSONObject: body, options: [.sortedKeys]),
