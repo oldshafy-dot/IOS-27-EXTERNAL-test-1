@@ -17,11 +17,11 @@ struct ThreeOneOSFiveApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
-        setupLogCapture()
-        // Bundle name, executable name, display name and icon may differ after
-        // signing/repackaging; do not block or terminate the app for that.
+        // Keep App initialization completely passive. Do not install stdout/stderr
+        // pipes, perform device attestation, or touch low-level services here.
+        // Those operations can destabilize an unsigned/repackaged IPA before the
+        // first SwiftUI frame is rendered.
         _identityViolation = State(initialValue: false)
-        log("app: MONITE launching — iOS \(AppInfo.osVersion) (\(AppInfo.osBuild)) \(AppInfo.machineName)")
     }
 
     private var language: AppLanguage {
