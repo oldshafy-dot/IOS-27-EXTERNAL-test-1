@@ -1,4 +1,4 @@
-import Foundation
+import Foundation\nimport CoreFoundation
 
 /// Central MONITE dashboard client.
 /// The Base44 app API key is intentionally NOT embedded in the iOS client.
@@ -8,7 +8,7 @@ final class MoniteAPIClient {
     static let shared = MoniteAPIClient()
     private init() {}
 
-    struct Snapshot {
+    struct Snapshot: Sendable {
         let maintenance: JSONValue?
         let config: JSONValue?
         let notices: JSONValue?
@@ -35,17 +35,17 @@ final class MoniteAPIClient {
         }
     }
 
-    func loadSnapshot(sessionToken: String?) async throws -> Snapshot {
-        async let maintenance = get(path: "/api/v1/maintenance", sessionToken: sessionToken)
-        async let config = get(path: "/api/v1/config", sessionToken: sessionToken)
-        async let notices = get(path: "/api/v1/notices", sessionToken: sessionToken)
-        async let games = get(path: "/api/v1/games", sessionToken: sessionToken)
-        async let functions = get(path: "/api/v1/functions", sessionToken: sessionToken)
-        async let categories = get(path: "/api/v1/categories", sessionToken: sessionToken)
-        async let patches = get(path: "/api/v1/patches", sessionToken: sessionToken)
-        async let updates = get(path: "/api/v1/updates", sessionToken: sessionToken)
+    func loadSnapshot(sessionToken: String?) async -> Snapshot {
+        async let maintenance = optionalGet(path: "/api/v1/maintenance", sessionToken: sessionToken)
+        async let config = optionalGet(path: "/api/v1/config", sessionToken: sessionToken)
+        async let notices = optionalGet(path: "/api/v1/notices", sessionToken: sessionToken)
+        async let games = optionalGet(path: "/api/v1/games", sessionToken: sessionToken)
+        async let functions = optionalGet(path: "/api/v1/functions", sessionToken: sessionToken)
+        async let categories = optionalGet(path: "/api/v1/categories", sessionToken: sessionToken)
+        async let patches = optionalGet(path: "/api/v1/patches", sessionToken: sessionToken)
+        async let updates = optionalGet(path: "/api/v1/updates", sessionToken: sessionToken)
 
-        return try await Snapshot(
+        return await Snapshot(
             maintenance: maintenance,
             config: config,
             notices: notices,
@@ -55,6 +55,10 @@ final class MoniteAPIClient {
             patches: patches,
             updates: updates
         )
+    }
+
+    private func optionalGet(path: String, sessionToken: String?) async -> JSONValue? {
+        try? await get(path: path, sessionToken: sessionToken)
     }
 
     func get(path: String, sessionToken: String? = nil) async throws -> JSONValue {
