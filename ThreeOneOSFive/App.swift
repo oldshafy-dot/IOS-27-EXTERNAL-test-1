@@ -182,9 +182,33 @@ private struct VesperSecurityAlertView: View {
 class AppState: ObservableObject {
     @Published var exploitStatus: ExploitStatus = .notStarted
     @Published var unsupportedMessage: String?
-    @Published var kernelExploitRunning = false\n    @Published private(set) var moniteRemoteSnapshot: MoniteAPIClient.Snapshot?\n    @Published private(set) var moniteRemoteLastError: String?\n    @Published private(set) var moniteRemoteLoadedAt: Date?
+    @Published var kernelExploitRunning = false
+    @Published private(set) var moniteRemoteSnapshot: MoniteAPIClient.Snapshot?
+    @Published private(set) var moniteRemoteLastError: String?
+    @Published private(set) var moniteRemoteLoadedAt: Date?
 
-    private var autoRunAttempted = false\n\n    func loadMoniteRemoteData(sessionToken: String?) {\n        Task {\n            let snapshot = await MoniteAPIClient.shared.loadSnapshot(sessionToken: sessionToken)\n            await MainActor.run {\n                self.moniteRemoteSnapshot = snapshot\n                self.moniteRemoteLoadedAt = Date()\n                let missing = [\n                    ("maintenance", snapshot.maintenance),\n                    ("config", snapshot.config),\n                    ("notices", snapshot.notices),\n                    ("games", snapshot.games),\n                    ("functions", snapshot.functions),\n                    ("categories", snapshot.categories),\n                    ("patches", snapshot.patches),\n                    ("updates", snapshot.updates)\n                ].filter { $0.1 == nil }.map(\\.0)\n                self.moniteRemoteLastError = missing.isEmpty ? nil : "Unavailable endpoints: " + missing.joined(separator: ", ")\n            }\n        }\n    }
+    private var autoRunAttempted = false
+
+    func loadMoniteRemoteData(sessionToken: String?) {
+        Task {
+            let snapshot = await MoniteAPIClient.shared.loadSnapshot(sessionToken: sessionToken)
+            await MainActor.run {
+                self.moniteRemoteSnapshot = snapshot
+                self.moniteRemoteLoadedAt = Date()
+                let missing = [
+                    ("maintenance", snapshot.maintenance),
+                    ("config", snapshot.config),
+                    ("notices", snapshot.notices),
+                    ("games", snapshot.games),
+                    ("functions", snapshot.functions),
+                    ("categories", snapshot.categories),
+                    ("patches", snapshot.patches),
+                    ("updates", snapshot.updates)
+                ].filter { $0.1 == nil }.map(\\.0)
+                self.moniteRemoteLastError = missing.isEmpty ? nil : "Unavailable endpoints: " + missing.joined(separator: ", ")
+            }
+        }
+    }
 
     var kernelExploitApplicable: Bool {
         KernelExploit.isApplicable(
