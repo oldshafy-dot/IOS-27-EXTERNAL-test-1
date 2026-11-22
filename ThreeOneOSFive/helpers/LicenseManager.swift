@@ -182,11 +182,11 @@ final class LicenseManager: ObservableObject {
         let body: [String: String] = [
             "key": key,
             "device_id": deviceID,
-            "product_identifier": "monite"
+            "bundle_id": "monite.external"
         ]
 
         guard let bodyData = try? JSONSerialization.data(withJSONObject: body, options: [.sortedKeys]),
-              let url = URL(string: "https://shafaykeyauthadmin.lovable.app/api/public/v1/verify-license") else {
+              let url = URL(string: "https://shafaydeveloperadmin.lovable.app/api/public/keys/verify") else {
             finishVerification(.failure(.message("License server configuration is invalid")), key: key, silent: silent, verificationID: verificationID)
             return
         }
