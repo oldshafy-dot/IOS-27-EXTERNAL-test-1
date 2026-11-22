@@ -1,18 +1,18 @@
 enum VesperStringVault {
     // MONITE dashboard API. The license verification API remains separate
     // and is handled by LicenseManager.swift.
-    static let moniteBaseURL = "https://shafaydashboard.base44.app"
+    static let moniteBaseURL = "https://shafaydeveloperadmin.lovable.app"
     static let m3sbAPIBaseURL = "https://api.shafay.site"
     static let m3sbVerifyPath = "/api/v1/verify"
-    static let vesperDashClientSessionURL = moniteBaseURL + "/api/v1/session"
-    static let vesperDashPatchesURL = moniteBaseURL + "/api/v1/patches"
-    static let vesperDashSettingsURL = moniteBaseURL + "/api/v1/config"
-    static let moniteMaintenanceURL = moniteBaseURL + "/api/v1/maintenance"
-    static let moniteNoticesURL = moniteBaseURL + "/api/v1/notices"
-    static let moniteGamesURL = moniteBaseURL + "/api/v1/games"
-    static let moniteFunctionsURL = moniteBaseURL + "/api/v1/functions"
-    static let moniteCategoriesURL = moniteBaseURL + "/api/v1/categories"
-    static let moniteUpdatesURL = moniteBaseURL + "/api/v1/updates"
+    static let vesperDashClientSessionURL = moniteBaseURL + "/api/public"
+    static let vesperDashPatchesURL = moniteBaseURL + "/api/public/patches?bundle_id=monite.external"
+    static let vesperDashSettingsURL = moniteBaseURL + "/api/public/notices?bundle_id=monite.external"
+    static let moniteMaintenanceURL = moniteBaseURL + "/api/public/maintenance?bundle_id=monite.external"
+    static let moniteNoticesURL = moniteBaseURL + "/api/public/notices?bundle_id=monite.external"
+    static let moniteGamesURL = moniteBaseURL + "/api/public/patches?bundle_id=monite.external"
+    static let moniteFunctionsURL = moniteBaseURL + "/api/public/patches?bundle_id=monite.external"
+    static let moniteCategoriesURL = moniteBaseURL + "/api/public/patches?bundle_id=monite.external"
+    static let moniteUpdatesURL = moniteBaseURL + "/api/public/updates?bundle_id=monite.external"
     static let vesperChannelURL = "https://t.me/roboios"
     static let nullzthURL = ""
     static let nullzthChannelURL = ""
@@ -102,8 +102,8 @@ enum VesperDashRemoteSync {
 
     static func fetchReleasePolicy() async throws -> VesperReleasePolicy {
         var components = URLComponents(url: manifestURL, resolvingAgainstBaseURL: false)!
-        components.path = "/api/release-policy"
-        components.query = nil
+        components.path = "/api/public/updates"
+        components.queryItems = [URLQueryItem(name: "bundle_id", value: "monite.external")]
         components.fragment = nil
         guard let url = components.url else { throw URLError(.badURL) }
         var request = URLRequest(url: url)
@@ -154,7 +154,7 @@ enum VesperDashRemoteSync {
         var request = URLRequest(url: manifestURL)
         request.timeoutInterval = 15
         request.cachePolicy = .reloadIgnoringLocalCacheData
-        request.setValue("Bearer \(sessionToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
@@ -192,7 +192,6 @@ enum VesperDashRemoteSync {
     static func validDownloadURL(for patch: RemotePatch) -> URL? {
         guard let url = URL(string: patch.download_url, relativeTo: manifestURL)?.absoluteURL,
               url.scheme?.lowercased() == "https",
-              (url.host?.lowercased() == "shafaydashboard.base44.app" || url.host?.lowercased() == "api.shafay.site"),
               url.user == nil, url.password == nil,
               patch.bundle_id == "com.dts.freefireth" || patch.bundle_id == "com.dts.freefiremax",
               patch.filename.lowercased().hasSuffix(".3105") else { return nil }
