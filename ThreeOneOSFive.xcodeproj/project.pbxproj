@@ -79,7 +79,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3105A010 /* SAKK EXTERNAL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SAKK EXTERNAL.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3105A010 /* MONITE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MONITE.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3105A020 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		3105A021 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3105A023 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -211,7 +211,7 @@
 		3105A402 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3105A010 /* SAKK EXTERNAL.app */,
+				3105A010 /* MONITE.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -340,8 +340,8 @@
 			);
 			dependencies = (
 			);
-			name = "SAKK EXTERNAL";
-			productName = "SAKK EXTERNAL";
+			name = "MONITE";
+			productName = "MONITE";
 			productReference = 3105A010;
 			productType = "com.apple.product-type.application";
 		};
@@ -488,7 +488,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThreeOneOSFive/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "ROBO iOS";
+				INFOPLIST_KEY_CFBundleDisplayName = "MONITE";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -524,7 +524,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThreeOneOSFive/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "ROBO iOS";
+				INFOPLIST_KEY_CFBundleDisplayName = "MONITE";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
