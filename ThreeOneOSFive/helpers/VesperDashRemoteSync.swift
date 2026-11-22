@@ -294,7 +294,8 @@ private struct MonitePatchWrapper: Decodable {
 
 
 // MARK: - MONITE Dashboard API
-import Foundation\nimport CoreFoundation
+import Foundation
+import CoreFoundation
 
 /// Central MONITE dashboard client.
 /// The Base44 app API key is intentionally NOT embedded in the iOS client.
