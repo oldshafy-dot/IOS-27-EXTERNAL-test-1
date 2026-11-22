@@ -70,7 +70,7 @@ enum AppTheme {
 
 struct AppRowIcon: View {
     let systemName: String
-    var tint: Color = AppTheme.accent
+    var tint: Color = .white
     var symbolSize: CGFloat = AppTheme.rowIconSize
     var frameSize: CGFloat = AppTheme.rowIconFrame
 
@@ -120,7 +120,7 @@ struct AppSearchField: View {
         .padding(.horizontal, 11)
         .frame(minHeight: 36)
         .background(
-            Color(uiColor: .secondarySystemFill),
+            Color(red: 0.08, green: 0.08, blue: 0.08),
             in: RoundedRectangle(cornerRadius: 10, style: .continuous)
         )
         .padding(.horizontal, AppTheme.pageInset)
