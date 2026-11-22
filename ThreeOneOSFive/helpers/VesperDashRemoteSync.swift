@@ -165,13 +165,34 @@ enum VesperDashRemoteSync {
             }
             throw URLError(.badServerResponse)
         }
-        return try JSONDecoder().decode(VesperDashManifest.self, from: data)
+        if let manifest = try? JSONDecoder().decode(VesperDashManifest.self, from: data) {
+            return manifest
+        }
+        if let array = try? JSONDecoder().decode([RemotePatch].self, from: data) {
+            return VesperDashManifest(
+                version: 1,
+                global_paused: false,
+                patches: array.filter { $0.enabled && !$0.paused },
+                all_patches: array,
+                package_passwords: nil
+            )
+        }
+        if let wrapper = try? JSONDecoder().decode(MonitePatchWrapper.self, from: data) {
+            return VesperDashManifest(
+                version: wrapper.version ?? 1,
+                global_paused: wrapper.global_paused ?? false,
+                patches: wrapper.patches.filter { $0.enabled && !$0.paused },
+                all_patches: wrapper.patches,
+                package_passwords: wrapper.package_passwords
+            )
+        }
+        throw URLError(.cannotParseResponse)
     }
 
     static func validDownloadURL(for patch: RemotePatch) -> URL? {
         guard let url = URL(string: patch.download_url, relativeTo: manifestURL)?.absoluteURL,
               url.scheme?.lowercased() == "https",
-              url.host?.lowercased() == "api.shafay.site",
+              (url.host?.lowercased() == "shafaydashboard.base44.app" || url.host?.lowercased() == "api.shafay.site"),
               url.user == nil, url.password == nil,
               patch.bundle_id == "com.dts.freefireth" || patch.bundle_id == "com.dts.freefiremax",
               patch.filename.lowercased().hasSuffix(".3105") else { return nil }
@@ -261,4 +282,12 @@ extension VesperDashRemoteSync {
         guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else { throw URLError(.badServerResponse) }
         return try JSONDecoder().decode(VesperAppSettings.self, from: data)
     }
+}
+
+
+private struct MonitePatchWrapper: Decodable {
+    let version: Int?
+    let global_paused: Bool?
+    let patches: [RemotePatch]
+    let package_passwords: [String]?
 }
