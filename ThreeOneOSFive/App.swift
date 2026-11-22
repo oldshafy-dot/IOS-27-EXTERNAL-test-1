@@ -204,7 +204,7 @@ class AppState: ObservableObject {
                     ("categories", snapshot.categories),
                     ("patches", snapshot.patches),
                     ("updates", snapshot.updates)
-                ].filter { $0.1 == nil }.map(\\.0)
+                ].filter { $0.1 == nil }.map(\.0)
                 self.moniteRemoteLastError = missing.isEmpty ? nil : "Unavailable endpoints: " + missing.joined(separator: ", ")
             }
         }
