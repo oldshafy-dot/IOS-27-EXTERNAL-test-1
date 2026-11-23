@@ -4,15 +4,15 @@ enum VesperStringVault {
     static let moniteBaseURL = "https://shafaydeveloperadmin.lovable.app"
     static let m3sbAPIBaseURL = "https://api.shafay.site"
     static let m3sbVerifyPath = "/api/v1/verify"
-    static let vesperDashClientSessionURL = moniteBaseURL + "/api/public"
-    static let vesperDashPatchesURL = moniteBaseURL + "/api/public/patches?bundle_id=monite.external"
-    static let vesperDashSettingsURL = moniteBaseURL + "/api/public/notices?bundle_id=monite.external"
-    static let moniteMaintenanceURL = moniteBaseURL + "/api/public/maintenance?bundle_id=monite.external"
-    static let moniteNoticesURL = moniteBaseURL + "/api/public/notices?bundle_id=monite.external"
-    static let moniteGamesURL = moniteBaseURL + "/api/public/patches?bundle_id=monite.external"
-    static let moniteFunctionsURL = moniteBaseURL + "/api/public/patches?bundle_id=monite.external"
-    static let moniteCategoriesURL = moniteBaseURL + "/api/public/patches?bundle_id=monite.external"
-    static let moniteUpdatesURL = moniteBaseURL + "/api/public/updates?bundle_id=monite.external"
+    static let vesperDashClientSessionURL = moniteBaseURL + "/api/public/v1/monite.external"
+    static let vesperDashPatchesURL = moniteBaseURL + "/api/public/v1/monite.external/patches"
+    static let vesperDashSettingsURL = moniteBaseURL + "/api/public/v1/monite.external/config"
+    static let moniteMaintenanceURL = moniteBaseURL + "/api/public/v1/monite.external/maintenance"
+    static let moniteNoticesURL = moniteBaseURL + "/api/public/v1/monite.external/notices"
+    static let moniteGamesURL = moniteBaseURL + "/api/public/v1/monite.external/structure"
+    static let moniteFunctionsURL = moniteBaseURL + "/api/public/v1/monite.external/structure"
+    static let moniteCategoriesURL = moniteBaseURL + "/api/public/v1/monite.external/structure"
+    static let moniteUpdatesURL = moniteBaseURL + "/api/public/v1/monite.external/updates"
     static let vesperChannelURL = "https://t.me/roboios"
     static let nullzthURL = ""
     static let nullzthChannelURL = ""
@@ -102,8 +102,8 @@ enum VesperDashRemoteSync {
 
     static func fetchReleasePolicy() async throws -> VesperReleasePolicy {
         var components = URLComponents(url: manifestURL, resolvingAgainstBaseURL: false)!
-        components.path = "/api/public/updates"
-        components.queryItems = [URLQueryItem(name: "bundle_id", value: "monite.external")]
+        components.path = "/api/public/v1/monite.external/updates"
+        components.query = nil
         components.fragment = nil
         guard let url = components.url else { throw URLError(.badURL) }
         var request = URLRequest(url: url)
