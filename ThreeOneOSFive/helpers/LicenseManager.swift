@@ -210,8 +210,15 @@ final class LicenseManager: ObservableObject {
             return .failure(.message("License server connection failed: \\(error.localizedDescription)"))
         }
 
-        guard let http = response as? HTTPURLResponse, let data else {
-            return .failure(.message("License server returned an invalid response"))
+        guard let http = response as? HTTPURLResponse else {
+            if let error {
+                return .failure(.message("License server connection failed: \(error.localizedDescription)"))
+            }
+            return .failure(.message("License server returned no HTTP response"))
+        }
+
+        guard let data, !data.isEmpty else {
+            return .failure(.message("License server returned an empty response (HTTP \(http.statusCode))"))
         }
 
         guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
