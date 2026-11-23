@@ -181,8 +181,7 @@ final class LicenseManager: ObservableObject {
         let deviceID = deviceIdentifier()
         let body: [String: String] = [
             "key": key,
-            "device_id": deviceID,
-            "bundle_id": "monite.external"
+            "device_id": deviceID
         ]
 
         guard let bodyData = try? JSONSerialization.data(withJSONObject: body, options: [.sortedKeys]),
@@ -242,7 +241,8 @@ final class LicenseManager: ObservableObject {
         }
 
         let state = APIState(json: json)
-        guard (json["success"] as? Bool) == true, state.valid, status == "active" else {
+        let success = json["success"] as? Bool ?? false
+        guard success, state.valid else {
             return .failure(.message(serverMessage ?? "License is not active"))
         }
 
