@@ -319,7 +319,7 @@ final class LicenseManager: ObservableObject {
                 expirationDate = nil
                 hasExpiryInformation = false
                 expiryDateWasProvided = false
-                message = state.message ?? "License is not active"
+                message = state.message ?? "License rejected: valid=false or the license has expired/banned"
                 return
             }
             save(key, for: keyAccount)
@@ -523,7 +523,15 @@ private struct APIState {
     let sessionToken: String?
 
     init(json: [String: Any]) {
-        valid = json["valid"] as? Bool ?? false
+        if let value = json["valid"] as? Bool {
+            valid = value
+        } else if let value = json["valid"] as? String {
+            valid = value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "true"
+        } else if let value = json["valid"] as? NSNumber {
+            valid = value.boolValue
+        } else {
+            valid = false
+        }
         status = json["status"] as? String
         contactOwner = json["telegram_username"] as? String
         message = json["message"] as? String
