@@ -248,9 +248,21 @@ final class LicenseManager: ObservableObject {
         }
 
         let state = APIState(json: json)
-        let success = json["success"] as? Bool ?? false
-        guard success, state.valid else {
-            return .failure(.message(serverMessage ?? "License is not active"))
+
+        // The MONITE.EXTERNAL /keys API uses "valid": true as the
+        // authoritative success flag. It does not require "status" or
+        // "success" to be present in a successful response.
+        guard state.valid else {
+            if status == "expired" {
+                return .failure(.message(serverMessage ?? "License key has expired"))
+            }
+            if status == "banned" {
+                return .failure(.message(serverMessage ?? "License key is banned"))
+            }
+            if (json["error"] as? String) == "DEVICE_MISMATCH" {
+                return .failure(.message(serverMessage ?? "License is already linked to another device"))
+            }
+            return .failure(.message(serverMessage ?? "License is not valid"))
         }
 
         return .success(state)
